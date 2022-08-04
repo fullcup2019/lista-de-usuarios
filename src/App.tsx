@@ -15,113 +15,103 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { Grid } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 
-useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users/")
-        .then((response) => response.json())
-        .then((json) => { setUsers(json); setLoading(false) });
-});
-
-const PageUserList = (props: any) => {
-    return <Typography variant="h6">Home</Typography>
-}
-
-const PageUserTask = (props: any) => {
-    return <Typography variant="h6">Tasks</Typography>
-}
-
-const PageShow = (props: any) => {
-    if (props.pageIndex === 1) {
-        return <PageUserList />
-    } else if (props.pageIndex === 2) {
-        return <PageUserTask />
-    }
-}
+import CircularProgress from '@mui/material/CircularProgress';
 
 const App = () => {
-    const [page, setPage] = useState(2);
 
+    const [page, setPage] = useState(0);
+    const [mainUser, setMainUser] = useState("Noone");
 
-    
-    // const Page = (value : any) => {
+    const PageUserList = (props: any) => {
 
-    //     const [mainUser, setMainUser] = useState("noone");
+        const [users, setUsers] = useState([
+            { id: 1, name: "Minora" },
+            { id: 2, name: "Ataide" },
+        ]);
+        
+        const [loading, setLoading] = useState(true);
+        
+        useEffect(() => {
+            fetch("https://jsonplaceholder.typicode.com/users/")
+                .then((response) => response.json())
+                .then((json) => { setUsers(json); setLoading(false) });
+        });
+        
+        return (
 
-    //     const [page, setPage] = useState(0);
+        <Container style={{
+            display: 'flex',
+            alignItems: 'top',
+            justifyContent: 'center',
+            height: '100vh',
+        }}>
+            <Container style={{justifyContent: 'center',width: '50%'}}>
+                <h2 style={{ textAlign: 'center'}}>Lista de usuários</h2>
+                {loading ? <Box sx={{ display: 'flex' }}><CircularProgress /></Box> : null}
+                <nav >
+                    <List
+                        component="nav"
+                        style={{height:"100%"}}
+                        aria-labelledby="Lista de usuários"
+                        //subheader={
+                            /*<ListSubheader component="div" id="Lista de usuários">
+                                Lista de usuários
+                            </ListSubheader>*/
+                        //}
+                        
 
-    //     const [loading, setLoading] = useState(true);
+                    >
+                        {users.map((user) => (
+                            <ListItem disablePadding>
+                                <ListItemButton onClick={() => {setPage(1); setMainUser(user.name)}}>
+                                    <ListItemAvatar>
+                                        <Avatar alt={user.name} src="/static/images/avatar/1.jpg" />
+                                    </ListItemAvatar>
+                                    <ListItemText primary={user.name} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </nav>
+            </Container>
+        </Container>
+        )
+    }
 
-    //     const [users, setUsers] = useState([
-    //         { id: 1, name: "Minora" },
-    //         { id: 2, name: "Ataide" },
-    //     ]);
+    const PageUserTask = (props: any) => {
+        return (
+            <div className="App">
+                <div className="card">
+                    <h1>{mainUser}</h1>
+                </div>
+            </div>
+        )
+    }
 
-    //     useEffect(() => {
-    //         fetch("https://jsonplaceholder.typicode.com/users/")
-    //             .then((response) => response.json())
-    //             .then((json) => { setUsers(json); setLoading(false) });
-    //     });
+    const PageDisplay = (props: any) => {
+        if (props.pageIndex === 0) {
+            return <PageUserList />
+        } else if (props.pageIndex === 1) {
+            return <PageUserTask />
+        }
 
-    //     //Página inicial
-    //     if (page == 0) {
-    //         return (
-    //             (
-    //                 <div className="App">
-    //                     <div className="card">
-    //                         {loading ? <h2>Carregando...</h2> : null}
-    //                         <nav aria-label="secondary mailbox folders">
-    //                             <List
-    //                                 sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-    //                                 component="nav"
-    //                                 aria-labelledby="Lista de usuários"
-    //                                 subheader={
-    //                                     <ListSubheader component="div" id="Lista de usuários">
-    //                                         Lista de usuários
-    //                                     </ListSubheader>
-    //                                 }
-    //                             >
-    //                                 {users.map((user) => (
-    //                                     <ListItem disablePadding>
-    //                                         <ListItemButton onClick={() => {setPage(1); setMainUser(user.name)}}>
-    //                                             <ListItemAvatar>
-    //                                                 <Avatar alt={user.name} src="/static/images/avatar/1.jpg" />
-    //                                             </ListItemAvatar>
-    //                                             <ListItemText primary={user.name} />
-    //                                         </ListItemButton>
-    //                                     </ListItem>
-    //                                 ))}
-    //                             </List>
-    //                         </nav>
-    //                     </div>
-    //                 </div>
-    //             )
-    //     )}
-
-    //     //Página do usuário
-    //     if (page == 1) {
-
-    //         return (
-    //                 <div className="App">
-    //                     <div className="card">
-    //                         <h1>{mainUser}</h1>
-    //                     </div>
-    //                 </div>
-    //             )
-    //     }
-    // }
+        return<></>
+    }
 
     return (
         <Grid container>
-                <AppBar position="static">
-                    <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Users
-                    </Typography>
-                    <Button color="inherit">Login</Button>
-                    </Toolbar>
-                </AppBar>
-                <PageShow pageIndex={page} />
+            <AppBar position="static">
+                <Toolbar>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    Users
+                </Typography>
+                <Button color="inherit">Login</Button>
+                </Toolbar>
+            </AppBar>
+
+            <PageDisplay pageIndex={page}/>
         </Grid>
     );
 };
