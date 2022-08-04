@@ -17,6 +17,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import { Container, Grid } from "@mui/material";
 
+<<<<<<< HEAD
 import CircularProgress from '@mui/material/CircularProgress';
 
 const App = () => {
@@ -25,6 +26,83 @@ const App = () => {
     const [mainUser, setMainUser] = useState("Noone");
 
     const PageUserList = (props: any) => {
+=======
+
+
+const App = () => {
+
+    const [mainUser, setMainUser] = useState("noone");
+
+    const [page, setPage] = useState(0);
+    
+    const PageUserList = (props: any) => {
+
+        const [loading, setLoading] = useState(true);
+
+        const [users, setUsers] = useState([
+            { id: 1, name: "Minora" },
+            { id: 2, name: "Ataide" },
+        ]);
+
+        useEffect(() => {
+            fetch("https://jsonplaceholder.typicode.com/users/")
+                .then((response) => response.json())
+                .then((json) => { setUsers(json); setLoading(false) });
+        });
+        
+        return (
+            <Grid>
+                <Grid>
+                    {loading ? <h2>Carregando...</h2> : null}
+                    <nav aria-label="secondary mailbox folders">
+                        <List  
+                            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} 
+                            component="nav"
+                            aria-labelledby="Lista de usuários"
+                            subheader={
+                                <ListSubheader component="div" id="Lista de usuários">
+                                    Lista de usuários
+                                </ListSubheader>
+                            }
+                        >
+                            {users.map((user) => (
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => {setPage(1); setMainUser(user.name)}}>
+                                        <ListItemAvatar>
+                                            <Avatar alt={user.name} src="/static/images/avatar/1.jpg" />
+                                        </ListItemAvatar>
+                                        <ListItemText primary={user.name} />
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </nav>
+                </Grid>
+            </Grid>
+        )
+    }
+    
+    const PageUserTask = (props: any) => {
+        return (
+            <div className="App">
+                <div className="card">
+                    <h1>{mainUser}</h1>
+                </div>
+            </div>
+        )
+    }
+    
+    const PageShow = (props: any) => {
+        if (props.pageIndex === 0) {
+            return <PageUserList />
+        } else if (props.pageIndex === 1) {
+            return <PageUserTask />
+        }
+        return <></>
+    }
+    
+    // const Page = (value : any) => {
+>>>>>>> bf282e55adcb1916d41e04c90023d241046b694b
 
         const [users, setUsers] = useState([
             { id: 1, name: "Minora" },
@@ -110,8 +188,12 @@ const App = () => {
                 <Button color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>
+<<<<<<< HEAD
 
             <PageDisplay pageIndex={page}/>
+=======
+            <PageShow pageIndex={page} />
+>>>>>>> bf282e55adcb1916d41e04c90023d241046b694b
         </Grid>
     );
 };
