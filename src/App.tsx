@@ -73,7 +73,7 @@ const App = () => {
                         >
                             {users.map((user) => (
                                 <ListItem disablePadding>
-                                    <ListItemButton onClick={() => {setPage(1); setMainUser(user.name)}}>
+                                    <ListItemButton onClick={() => {setPage(2); setMainUser(user.name)}}>
                                         <ListItemAvatar>
                                             <Avatar alt={user.name} src="/static/images/avatar/1.jpg" />
                                         </ListItemAvatar>
@@ -134,16 +134,48 @@ const App = () => {
             </Grid>
         )
     }
+
+    const PageUserPosts = (props: any) => {
+
+        const [loading, setLoading] = useState(true);
+
+        const [posts, setPosts] = useState([
+            { id: 1, title: "" , body:"", userID: 0},
+        ]);
+
+        useEffect(() => {
+            fetch("https://jsonplaceholder.typicode.com/users/1/posts")
+                .then((response) => response.json())
+                .then((json) => { setPosts(json); setLoading(false) });
+        });
+        
+        return (
+            <Grid container style={{
+            display: 'grid',
+            width: "200%",
+            alignItems: 'top',
+            justifyContent: 'center',
+            }}
+            >
+                {posts.map((post) => (
+                    <Box sx={{ p: 2, border: '1px solid grey'}}>
+                        <Box style={{display:"flex", alignItems:"center"}}>
+                            <Avatar alt={mainUser} src="/static/images/avatar/1.jpg" />
+                            <Typography style={{ paddingLeft:"10px"}}>{mainUser}</Typography>
+                        </Box>
+                        
+                        <Typography variant="h5" >{post.title}</Typography>
+                        <Typography>{post.body}</Typography>
+                    </Box>
+                ))}
+            </Grid>
+        )
+    }
     
     const PageDisplay = (props: any) => {
-        if (props.pageIndex === 0) {
-            return <PageUserList />
-        } else if (props.pageIndex === 1) {
-            return <PageUserTask />
-        }
-        else if (props.pageIndex === 2) {
-            setPage(1);
-        }
+        if      (props.pageIndex === 0) {return <PageUserList />} 
+        else if (props.pageIndex === 1) {return <PageUserTask />}
+        else if (props.pageIndex === 2) {return <PageUserPosts/>}
 
         return<></>
     }
@@ -155,7 +187,7 @@ const App = () => {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Users
                 </Typography>
-                <Button color="inherit">Login</Button>
+                <Button onClick={() => {setPage(0)}}color="inherit">Início</Button>
                 </Toolbar>
             </AppBar>
 
