@@ -110,7 +110,7 @@ const App = () => {
                 style={{display:"flex"}}   
                 >
                     <Input placeholder="add task" type="text" style={{width:"200%"}}/>
-                    <Button type="button" variant="outlined" onClick={() => {tasks.push({name:"Oi",checked:false}); setPage(1)}}>Add</Button>
+                    <Button type="button" variant="outlined" onClick={() => {tasks.push({name:"dafault task",checked:false}); setPage(1)}}>Add</Button>
                 </Box>
                 
                 {tasks.map((task) => (
