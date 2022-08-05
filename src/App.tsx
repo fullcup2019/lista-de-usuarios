@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import Input from '@mui/material/Input';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -13,9 +14,17 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+
 import IconButton from '@mui/material/IconButton';
-import { Container, Grid } from "@mui/material";
+import { Container, Grid, gridClasses } from "@mui/material";
+import TextField from '@mui/material/TextField';
+
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -25,7 +34,12 @@ const App = () => {
     const [mainUser, setMainUser] = useState("noone");
 
     const [page, setPage] = useState(0);
-    
+
+    const [tasks, setTasks] = useState([
+        {name: "Task 1", checked: false},
+        {name: "Task 2", checked: false}
+    ]);
+
     const PageUserList = (props: any) => {
 
         const [loading, setLoading] = useState(true);
@@ -56,11 +70,6 @@ const App = () => {
                             component="nav"
                             style={{height:"100%"}}
                             aria-labelledby="Lista de usuários"
-                            //subheader={
-                                /*<ListSubheader component="div" id="Lista de usuários">
-                                    Lista de usuários
-                                </ListSubheader>*/
-                            //}
                         >
                             {users.map((user) => (
                                 <ListItem disablePadding>
@@ -78,14 +87,51 @@ const App = () => {
             </Container>
         )
     }
-    
+
     const PageUserTask = (props: any) => {
         return (
-            <div className="App">
-                <div className="card">
+            
+            <Grid container style={{
+            display: 'grid',
+            width: "200%",
+            alignItems: 'bottom',
+            justifyContent: 'center',
+            }}>
+                <Grid style={{textAlign:"center"}}>
                     <h1>{mainUser}</h1>
-                </div>
-            </div>
+                    <h2>Tarefas</h2>
+                </Grid>
+                
+                <Box
+                component="form"
+                sx={{'& > :not(style)': { m: 1, width: '50ch' },}}
+                noValidate
+                autoComplete="off"
+                style={{display:"flex"}}   
+                >
+                    <Input placeholder="add task" type="text" style={{width:"200%"}}/>
+                    <Button type="button" variant="outlined" onClick={() => {tasks.push({name:"Oi",checked:false}); setPage(1)}}>Add</Button>
+                </Box>
+                
+                {tasks.map((task) => (
+                    <FormGroup>
+                        <FormControlLabel 
+                        onChange={() => {task.checked = (task.checked === true) ? false : true;}}
+                        control={<Checkbox defaultChecked={task.checked} />} 
+                        label={task.name} 
+                        />
+                    </FormGroup>
+                ))}
+
+                <Stack spacing={2} direction="row" style={{
+                display: 'grid',
+                width: "200%",
+                alignItems: 'bottom',
+                justifyContent: 'center',
+                }}>
+                    <Button variant="contained" onClick={() => {setPage(0)}}>Home</Button>
+                </Stack>
+            </Grid>
         )
     }
     
@@ -94,6 +140,9 @@ const App = () => {
             return <PageUserList />
         } else if (props.pageIndex === 1) {
             return <PageUserTask />
+        }
+        else if (props.pageIndex === 2) {
+            setPage(1);
         }
 
         return<></>
