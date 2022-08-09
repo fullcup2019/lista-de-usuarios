@@ -8,7 +8,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Divider from '@mui/material/Divider';
 
 
-const App = (props) => {
+const App = () => {
 	const [users, setUsers] = useState([
 		{ id: 1, name: "Minora" },
 		{ id: 2, name: "Ataide" },

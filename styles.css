@@ -1,0 +1,27 @@
+:root {
+    background-color: #0d47a1;
+    color: #bbdefb;
+}
+
+.nav {
+    color: #004d40;
+    background-color: #00bcd4
+}
+
+.font {
+    color: #bbdefb;
+}
+
+.icon {
+    color: #bbdefb;
+}
+
+.contained-button {
+    color: #0d47a1;
+    background-color: #bbdefb;  
+}
+
+.text-field {
+    color: #0d47a1;
+    color: #bbdefb; 
+}
