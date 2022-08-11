@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import Link from '@mui/material/Link';
 import TaskIcon from '@mui/icons-material/Task';
 import Input from '@mui/material/Input';
 import List from '@mui/material/List';
@@ -34,9 +35,11 @@ import CommentIcon from '@mui/icons-material/Comment';
 
 const App = () => {
 
-    const [mainUser, setMainUser] = useState("noone");
+    const [mainUser, setMainUser] = useState(-1);
 
-    const [page, setPage] = useState(-1);
+    const [logged, setLogged] = useState(1);
+
+    const [page, setPage] = useState(-2);
 
     const [tasks, setTasks] = useState([
         {name: "Task 1", checked: false},
@@ -46,6 +49,7 @@ const App = () => {
     const [mainPost, setMainPost] = useState(0);
 
     const PageLogin = (props: any) => {
+        
         return (
             <Container sx={{
                 alignItems: 'bottom',
@@ -76,7 +80,7 @@ const App = () => {
                         }} 
                     ></TextField>
                 </Box>
-                <Box sx={{p:2}}>
+                <Box sx={{px:2, pt:1, pb:2}}>
                     <TextField 
                         label="Password" 
                         type="password" 
@@ -98,13 +102,84 @@ const App = () => {
                         }}
                     ></TextField>
                 </Box>
-                <Box sx={{display: 'grid',justifyContent: 'right', pr:2}}>
-                    <Button className="contained-button" variant="contained" onClick={() => {setPage(0)}}>LOGIN</Button>
+                <Box sx={{display: 'grid',justifyContent: 'center', px:2}}>
+                    <Button className="contained-button" variant="contained" onClick={() => {setPage(0); setLogged(1)}}>LOGIN</Button>
+                    <Box sx={{display: 'flex',justifyContent: 'right', pr:2, pt:1}}>
+                        <Typography>Não tem conta? </Typography><Link style={{color:"#00bcd4"}} onClick={()=>{setPage(-2)}}> Cadastre-se!</Link>
+                    </Box>
                 </Box>
 
             </Container>
         )
     }
+
+    const PageSign = (props: any) => {
+        
+        return (
+            <Container sx={{
+                alignItems: 'bottom',
+                display: 'grid',
+                justifyContent: 'center'}}
+            >
+                <Box sx={{display: 'grid',justifyContent: 'center'}}>
+                    <Typography variant="h4" sx={{pb:2, pt:5, px:2}}>MY.SITE</Typography>
+                </Box>
+                <Box sx={{px:2}}>
+                    <TextField 
+                        label="E-mail" 
+                        sx={{
+                            input:{color:"#bbdefb"},
+                            label:{color:"#bbdefb"},
+                            '& label.Mui-focused' :{color:"#42a5f5", borderColor:"#bbdefb"},
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: "#bbdefb",
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: "#42a5f5",
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: "#42a5f5",
+                                  },
+                            }
+                        }} 
+                    ></TextField>
+                </Box>
+                <Box sx={{px:2,pt:1, pb:2}}>
+                    <TextField 
+                        label="Password" 
+                        type="password" 
+                        sx={{
+                            input:{color:"#bbdefb"},
+                            label:{color:"#bbdefb"},
+                            '& label.Mui-focused' :{color:"#42a5f5", borderColor:"#bbdefb"},
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: "#bbdefb",
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: "#42a5f5",
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: "#42a5f5",
+                                  },
+                            }
+                        }}
+                    ></TextField>
+                </Box>
+                <Box sx={{display: 'grid',justifyContent: 'center', px:2}}>
+                    <Button className="contained-button" variant="contained" onClick={() => {setPage(0); setLogged(1)}}>CADASTRE-SE</Button>
+                    <Box sx={{display: 'flex',justifyContent: 'right', pr:2, pt:1}}>
+                        <Typography>Já tem conta? </Typography><Link style={{color:"#00bcd4"}} onClick={()=>{setPage(-1)}}> Faça login!</Link>
+                    </Box>
+                </Box>
+
+
+
+            </Container>
+        )
+    }
+
     const PageUserList = (props: any) => {
 
         const [loading, setLoading] = useState(true);
@@ -138,14 +213,13 @@ const App = () => {
                         >
                             {users.map((user) => (
                                 <ListItem disablePadding>
-                                    
-                                        <ListItemButton onClick={() => {setPage(2); setMainUser(user.name)}}>
+                                        <ListItemButton onClick={() => {setMainUser(user.id); setPage(2);}}>
                                             <ListItemAvatar>
                                                 <Avatar alt={user.name} src="/static/images/avatar/1.jpg" />
                                             </ListItemAvatar>
                                             <ListItemText primary={user.name} />
                                         </ListItemButton>
-                                        <IconButton onClick={()=>{setPage(1)}} aria-label="delete" sx={{color:"#bbdefb"}}>
+                                        <IconButton onClick={()=>{setPage(1); setMainUser(user.id);}} aria-label="delete" sx={{color:"#bbdefb"}}>
                                             <TaskIcon sx={{fontSize: 35}}/>
                                         </IconButton>
                                 </ListItem>
@@ -158,6 +232,37 @@ const App = () => {
     }
 
     const PageUserTask = (props: any) => {
+
+        const [loading, setLoading] = useState(true);
+
+        const [tasks, setTasks] = useState([
+            { userId: 1, id: 1, title: "task", completed:false },
+        ]);
+
+
+        const [users, setUsers] = useState([
+            { id: 1, name: "" },
+            { id: 2, name: "" },
+        ]);
+
+        useEffect(() => {
+            fetch("https://jsonplaceholder.typicode.com/users/")
+                .then((response) => response.json())
+                .then((json) => { setUsers(json); setLoading(false) });
+        });
+        
+        var theUser = users.find(user => {return user.id === mainUser;});
+        if (theUser === undefined) {theUser = { id: 1, name: "Minora" };}
+        const theUserId = theUser.id;
+        let targetURL = 'https://jsonplaceholder.typicode.com/users/'+theUserId+'/todos';
+        
+        useEffect(() => {
+            fetch(targetURL)
+                .then((response) => response.json())
+                .then((json) => { setTasks(json); setLoading(false) });
+        });
+
+
         return (
             
             <Grid container style={{
@@ -167,10 +272,10 @@ const App = () => {
             justifyContent: 'center',
             }}>
                 <Grid style={{textAlign:"center"}}>
-                    <h1>{mainUser}</h1>
+                    <h1>{theUser.name}</h1>
                     <h2>Tarefas</h2>
                 </Grid>
-                
+                <Typography>{targetURL}</Typography>
                 <Box
                 component="form"
                 sx={{'& > :not(style)': { m: 1, width: '50ch' },}}
@@ -178,58 +283,53 @@ const App = () => {
                 autoComplete="off"
                 style={{display:"flex"}}   
                 >
-                    <Input placeholder="add task" type="text" style={{width:"200%"}}/>
-                    <Button type="button" variant="outlined" onClick={() => {tasks.push({name:"dafault task",checked:false}); setPage(1)}}>Add</Button>
+                    <Button type="button" variant="outlined" onClick={() => {tasks.push({userId:0, id:0, title:"dafault task",completed:false}); setPage(1)}}>Add</Button>
                 </Box>
                 
                 {tasks.map((task) => (
                     <FormGroup>
                         <FormControlLabel 
-                        onChange={() => {task.checked = (task.checked === true) ? false : true;}}
-                        control={<Checkbox defaultChecked={task.checked} />} 
-                        label={task.name} 
+                        onChange={() => {task.completed = (task.completed === true) ? false : true;}}
+                        control={<Checkbox defaultChecked={task.completed} />} 
+                        label={task.title} 
                         />
                     </FormGroup>
                 ))}
-
-                <Stack spacing={2} direction="row" style={{
-                display: 'grid',
-                width: "200%",
-                alignItems: 'bottom',
-                justifyContent: 'center',
-                }}>
-                    <Button variant="contained" onClick={() => {setPage(0)}}>Home</Button>
-                </Stack>
             </Grid>
         )
     }
 
     const PageUserPostComments = (props: any) => {
 
-        const [posts, setPosts] = useState([
-            { id: 1, title: "" , body:"", userID: 0},
-        ]);
-        
-        const [comments, setComments] = useState([
-            { id: 1, title: "" , completed: false, userID: 0},
-        ]);
-
-        const [loading, setLoading] = useState(true);
+        const [users, setUsers]         = useState([{ id: 1, name: ""}]);
+        const [posts, setPosts]         = useState([{ id: 1, title: "" , body:"", userID: 0}]);
+        const [comments, setComments]   = useState([{ id: 0, postId: 0 , body:"", name:"", email: "@"}]);
+        const [loading, setLoading]     = useState(true);
         
         useEffect(() => {
-            fetch("https://jsonplaceholder.typicode.com/users/1/posts")
+            fetch("https://jsonplaceholder.typicode.com/users/")
                 .then((response) => response.json())
-                .then((json) => { setPosts(json); setLoading(false) });
+                .then((json) => { setUsers(json); setLoading(false) });
         });
 
         useEffect(() => {
-            fetch("https://jsonplaceholder.typicode.com/users/2/todos")
+            fetch("https://jsonplaceholder.typicode.com/users/"+(theUser!).id+"/posts")
+                .then((response) => response.json())
+                .then((json) => { setPosts(json); setLoading(false) });
+        });
+        useEffect(() => {
+            fetch("https://jsonplaceholder.typicode.com/users/"+(theUser!).id+"/comments")
                 .then((response) => response.json())
                 .then((json) => { setComments(json); setLoading(false) });
         });
 
-        var found = posts.find(obj => {return obj.id === 1;});
-        if (found === undefined) {found = { id: 1, title: "" , body:"", userID: 0};}
+        var theUser = users.find(user => {return user.id === mainUser;});
+        if (theUser === undefined) {theUser = { id: 1, name: "n"};}
+
+        var thePost = posts.find(post => {return post.id === mainPost;});
+        if (thePost === undefined) {thePost = { id: 1, title: "" , body:"", userID: 0};}
+
+        var theComments = comments.filter(comment => {return comment.postId === (thePost!).id;});
 
         return (
             
@@ -240,14 +340,14 @@ const App = () => {
                 <Box sx={{ width: "60%", b: 60, p: 2,m: 2}}>
                     <Box sx={{ b: 60, p: 2, backgroundColor: "#1565c0;",m: 2}}>
                         <Box style={{display:"flex", alignItems:"center"}} sx={{paddingBottom: 2}}>
-                            <Avatar alt={mainUser} src="/static/images/avatar/1.jpg" />
-                            <Typography style={{ paddingLeft:"10px", fontWeight:"550 "}}>{mainUser}</Typography>
+                            <Avatar alt={(theUser!).name} src="/static/images/avatar/1.jpg" />
+                            <Typography style={{ paddingLeft:"10px", fontWeight:"550 "}}>{(theUser!).name}</Typography>
                         </Box>
 
                         {loading ? <Box sx={{ display: 'flex', justifyContent: 'center'}}><CircularProgress sx={{color:"#bbdefb"}}/></Box> : null}
                         
-                        <Typography variant="h5">{found.title}</Typography>
-                        <Typography>{found.body}</Typography>
+                        <Typography variant="h5">{(thePost!).title}</Typography>
+                        <Typography>{(thePost!).body}</Typography>
                         <Box style={{display: "flex", justifyContent:"right"}}>
                             <IconButton onClick={()=>{setPage(2)}} aria-label="delete" sx={{color:"#2196f3"}}>
                                 <CommentIcon sx={{fontSize: 35}}/>
@@ -255,16 +355,18 @@ const App = () => {
                         </Box>
                     </Box>
                     <Box sx={{justifyContent:"right"}}>
-                        {comments.map((comment) => (
+                        {theComments.map((comment) => (
                             <Box sx={{ width: "80%", b: 60, p: 2, backgroundColor: "#1565c0;",m: 2, position:"relative", float:"right"}}>
                                 <Box style={{display:"flex", alignItems:"center"}} sx={{paddingBottom: 2}}>
-                                    <Avatar alt={mainUser} src="/static/images/avatar/1.jpg" />
-                                    <Typography style={{ paddingLeft:"10px", fontWeight:"550 "}}>{mainUser}</Typography>
+                                    <Avatar alt={(comment!).email} src="/static/images/avatar/1.jpg" />
+                                    <Typography style={{ paddingLeft:"10px", fontWeight:"550 "}}>{(comment!).email}</Typography>
                                 </Box>
 
                                 {loading ? <Box sx={{ display: 'flex', justifyContent: 'center'}}><CircularProgress sx={{color:"#bbdefb"}}/></Box> : null}
 
-                                <Typography variant="h6" >{comment.title}</Typography>
+                                <Typography variant="h6" >{comment.name}</Typography>
+                                <Typography >{comment.body}</Typography>
+
                             </Box>
                         ))}
                     </Box>:
@@ -281,11 +383,26 @@ const App = () => {
             { id: 1, title: "" , body:"", userID: 0},
         ]);
 
+        const [users, setUsers] = useState([
+            { id: 1, name: "" },
+            { id: 2, name: "" },
+        ]);
+
         useEffect(() => {
-            fetch("https://jsonplaceholder.typicode.com/users/1/posts")
+            fetch("https://jsonplaceholder.typicode.com/users/")
+                .then((response) => response.json())
+                .then((json) => { setUsers(json); setLoading(false) });
+        }); 
+        
+        var theUser = users.find(user => {return user.id === mainUser;});
+        if (theUser === undefined) {theUser = { id: 1, name: "Minora" };}
+        
+        useEffect(() => {
+            fetch('https://jsonplaceholder.typicode.com/users/'+(theUser!).id+'/posts')
                 .then((response) => response.json())
                 .then((json) => { setPosts(json); setLoading(false) });
         });
+
         
         return (
             <Grid container style={{
@@ -293,12 +410,11 @@ const App = () => {
             justifyContent: 'center'
             }}
             >
-
                 {posts.map((post) => (
                     <Box sx={{ width: "60%", b: 60, p: 2, backgroundColor: "#1565c0;",m: 2}}>
                         <Box style={{display:"flex", alignItems:"center"}} sx={{paddingBottom: 2}}>
-                            <Avatar alt={mainUser} src="/static/images/avatar/1.jpg" />
-                            <Typography style={{ paddingLeft:"10px", fontWeight:"550 "}}>{mainUser}</Typography>
+                            <Avatar alt={(theUser!).name} src="/static/images/avatar/1.jpg" />
+                            <Typography style={{ paddingLeft:"10px", fontWeight:"550 "}}>{(theUser!).name}</Typography>
                         </Box>
 
                         {loading ? <Box sx={{ display: 'flex', justifyContent: 'center'}}><CircularProgress sx={{color:"#bbdefb"}}/></Box> : null}
@@ -306,7 +422,7 @@ const App = () => {
                         <Typography variant="h5" >{post.title}</Typography>
                         <Typography>{post.body}</Typography>
                         <Box style={{display: "flex", justifyContent:"right"}}>
-                            <IconButton onClick={()=>{setPage(3),setMainPost(post.id)}}aria-label="delete" sx={{color:"#bbdefb"}}>
+                            <IconButton onClick={()=>{setPage(3),setMainPost(post.id),setMainUser((theUser!).id)}}aria-label="delete" sx={{color:"#bbdefb"}}>
                                 <CommentIcon sx={{fontSize: 35}}/>
                             </IconButton>
                         </Box>
@@ -316,27 +432,50 @@ const App = () => {
         )
     }
     
+    const PageBar = (props: any) => {
+        if (props.logged) {
+            return (
+                <AppBar position="static">
+                <Toolbar className="nav">
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    MY.SITE
+                </Typography>
+                <Box>
+                    <Button onClick={() => {setPage(0)}}color="inherit">Início</Button>
+                    <Button onClick={() => {setPage(-1); setLogged(0)}}color="inherit">Logout</Button>
+                </Box>
+                
+                </Toolbar>
+            </AppBar>
+            )  
+        }
+
+        return (
+            <AppBar position="static">
+                <Toolbar className="nav">
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    MY.SITE
+                </Typography>
+                </Toolbar>
+            </AppBar>
+        )
+
+    }
     const PageDisplay = (props: any) => {
         if      (props.pageIndex === 0) {return <PageUserList />} 
         else if (props.pageIndex === 1) {return <PageUserTask />}
         else if (props.pageIndex === 2) {return <PageUserPosts/>}
         else if (props.pageIndex === 3) {return <PageUserPostComments/>}
         else if (props.pageIndex ===-1) {return <PageLogin/>}
+        else if (props.pageIndex ===-2) {return <PageSign/>}
 
         return<></>
     }
 
     return (
         <Grid container>
-            <AppBar position="static">
-                <Toolbar className="nav">
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    MY.SITE
-                </Typography>
-                <Button onClick={() => {setPage(0)}}color="inherit">Início</Button>
-                </Toolbar>
-            </AppBar>
 
+            <PageBar logged={logged}/>
             <PageDisplay pageIndex={page}/>
         </Grid>
     );
